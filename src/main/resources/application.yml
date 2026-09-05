@@ -1,1 +1,28 @@
-spring.application.name=demo-spring-kafka
+spring:
+  application:
+    name: demo-spring-kafka
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
+      acks: all
+      properties:
+        enable.idempotence: true
+    admin:
+      fail-fast: true
+    consumer:
+      group-id: payment-service
+      auto-offset-reset: earliest
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+        "[spring.json.trusted.packages]": com.company.demospringkafka.event
+        "[spring.json.value.default.type]": com.company.demospringkafka.event.PaymentCompletedEvent
+
+logging:
+  level:
+    com.company.demospringkafka: DEBUG
+    org.springframework.kafka: INFO
